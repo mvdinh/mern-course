@@ -8,6 +8,9 @@ import Profile from "./pages/Profile";
 import CollectionPage from "./pages/CollectionPage";
 import ProductDetails from "./components/Products/ProductDetails";
 import Checkout from "./components/Cart/Checkout";
+import OrderConfirmationPage from "./pages/OrderConfirmationPage";
+import OrderDetailPage from "./pages/OrderDetailPage";
+import MyOrderPage from "./pages/MyOrderPage";
 
 const App = () =>{
   return (
@@ -23,7 +26,9 @@ const App = () =>{
           <Route path="collections/:collection" element={<CollectionPage/>}/>
           <Route path="product/:id" element={<ProductDetails/>}/>
           <Route path="checkout" element={<Checkout/> }/>
-          
+          <Route path="order-confirmation" element={<OrderConfirmationPage/> }/>
+          <Route path="order/:id" element={<OrderDetailPage/>}/>
+          <Route path="my-orders" element={<MyOrderPage/>}/>
         </Route>
       </Routes>
     </BrowserRouter>
