@@ -1,0 +1,37 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+require('dotenv').config();
+const connectDB = require("./config/db");
+const userRoutes = require("./routes/userRoutes")
+const app = express();
+
+// Middleware để parse JSON (express đã tích hợp sẵn)
+app.use(express.json()); 
+
+// Middleware để parse URL-encoded data
+app.use(express.urlencoded({ extended: true }));
+
+// Middleware cookie-parser để làm việc với cookies
+
+// CORS configuration cho phép frontend từ localhost:3000
+app.use(
+    cors({
+        origin: "http://localhost:3000", // Chỉ định frontend URL
+        credentials: true,               // Cho phép gửi cookie
+    })
+);
+
+//Connect Mongo
+connectDB();
+
+const port = process.env.PORT || 3001;
+
+//API Routes
+app.use("/api/users", userRoutes)
+app.get("/", (req, res)=>{
+    res.send("helo")
+})
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
