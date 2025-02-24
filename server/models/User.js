@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema(
         password: { 
             type: String, // Kiểu dữ liệu là chuỗi
             required: true, // Bắt buộc nhập mật khẩu
-            minLength: 6 // Độ dài tối thiểu của mật khẩu là 6 ký tự
+            minLength: 1 // Độ dài tối thiểu của mật khẩu là 6 ký tự
         },
         role: {
             type: String, // Kiểu dữ liệu là chuỗi
@@ -51,5 +51,5 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password); // Trả về true nếu mật khẩu khớp, ngược lại là false
 };
 
-// Xuất model User để có thể sử dụng ở nơi khác
+
 module.exports = mongoose.model("User", userSchema);
