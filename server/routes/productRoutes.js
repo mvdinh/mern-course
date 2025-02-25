@@ -200,53 +200,12 @@ router.get("/", async (req, res) => {
 });
 
 
-// @route GET /api/products/similar/:id
-// @desc Retrieve similar products based on the current product's gender and category
-// @access Public
-router.get("/similar/:id", async(req, res)=>{
-    try{
-        const {id} = req.params;
-        const product = Product.findById(id);
-        if(!product){
-            res.status(404).json({message:"Product not found."})
-        }
-        const similarProducts = await Prouduct.find({
-            _id: {$ne: id},  //Exclude the current product 
-            gender: product.gender,
-            category: product.category,
-        }).limit(4);
-        res.json(similarProducts)
-    }
-    catch(err){
-        console(err);
-        res.status(500).send("Sever Error")
-    }
-})
-
-// @route GET /api/products/:id
-// @desc Get a single Product by Id
-// @access Public
-router.get("/:id", async(req, res)=>{
-    try{
-        const product = Product.findById(req.params.id);
-        if(product){
-            res.json(product);
-        }else {
-            res.status(404).json({message:"Product not found."})
-        }
-    }
-    catch(err){
-        console(err);
-        res.status(500).send("Sever Error")
-    }
-})
-
 // @route GET /api/products/best-seller
 // @desc Retrieve the product with highest rating
 // @access Public
 router.get("/best-seller", async(req, res)=>{
     try{
-        const bestSeller = Product.findOne().sort({rating: -1});
+        const bestSeller = await Product.findOne().sort({rating: -1});
         if(bestSeller){
             res.json(bestSeller);
         }else {
@@ -254,7 +213,7 @@ router.get("/best-seller", async(req, res)=>{
         }
     }
     catch(err){
-        console(err);
+        console.log(err);
         res.status(500).send("Sever Error")
     }
 })
@@ -265,7 +224,7 @@ router.get("/best-seller", async(req, res)=>{
 router.get("/new-arrivals", async(req, res)=>{
     try{
         //Fetch latest 8 products
-        const newArrivals = Product.findOne().sort({createAt: -1}).limit(8);
+        const newArrivals = await Product.findOne().sort({createAt: -1}).limit(8);
         if(newArrivals){
             res.json(newArrivals);
         }else {
@@ -273,9 +232,53 @@ router.get("/new-arrivals", async(req, res)=>{
         }
     }
     catch(err){
-        console(err);
+        console.log(err);
         res.status(500).send("Sever Error")
     }
 })
+
+// @route GET /api/products/similar/:id
+// @desc Retrieve similar products based on the current product's gender and category
+// @access Public
+router.get("/similar/:id", async(req, res)=>{
+    try{
+        const {id} = req.params;
+        const product = await Product.findById(id);
+        if(!product){
+            res.status(404).json({message:"Product not found."})
+        }
+        const similarProducts = await Product.find({
+            _id: {$ne: id},  //Exclude the current product 
+            gender: product.gender,
+            category: product.category,
+        }).limit(4);
+        res.json(similarProducts)
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).send("Sever Error")
+    }
+})
+
+// @route GET /api/products/:id
+// @desc Get a single Product by Id
+// @access Public
+router.get("/:id", async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id); // Thêm await
+
+        if (product) {
+            res.json(product);
+        } else {
+            res.status(404).json({ message: "Product not found." });
+        }
+    } catch (err) {
+        console.error("Lỗi khi tìm sản phẩm:", err);
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+
+
+
 
 module.exports= router;
