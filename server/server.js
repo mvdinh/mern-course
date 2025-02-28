@@ -5,7 +5,9 @@ require('dotenv').config();
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes")
 const productRoutes = require("./routes/productRoutes")
-const c = require("./routes/cartRoutes")
+const cartRoutes = require("./routes/cartRoutes")
+const checkoutRoutes = require("./routes/checkoutRoutes")
+const orderRoutes = require("./routes/orderRoutes")
 const app = express();
 
 // Middleware để parse JSON (express đã tích hợp sẵn)
@@ -32,7 +34,9 @@ const port = process.env.PORT || 3001;
 //API Routes
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
-app.use("/api/cart", c);
+app.use("/api/cart", cartRoutes);
+app.use("/api/checkout", checkoutRoutes);
+app.use("/api/orders", orderRoutes);
 
 app.get("/", (req, res)=>{
     res.send("helo")
