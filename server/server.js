@@ -8,6 +8,7 @@ const productRoutes = require("./routes/productRoutes")
 const cartRoutes = require("./routes/cartRoutes")
 const checkoutRoutes = require("./routes/checkoutRoutes")
 const orderRoutes = require("./routes/orderRoutes")
+const uploadRoutes = require("./routes/uploadRoutes")
 const app = express();
 
 // Middleware để parse JSON (express đã tích hợp sẵn)
@@ -37,6 +38,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/checkout", checkoutRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/upload", uploadRoutes);
 
 app.get("/", (req, res)=>{
     res.send("helo")
