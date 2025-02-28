@@ -10,6 +10,9 @@ const checkoutRoutes = require("./routes/checkoutRoutes")
 const orderRoutes = require("./routes/orderRoutes")
 const uploadRoutes = require("./routes/uploadRoutes")
 const subscribeRoutes = require("./routes/subscriberRoutes")
+const adminRoutes = require("./routes/Admin/adminRoutes")
+const productAdminRoutes = require("./routes/Admin/productAdminRoutes")
+const orderAdminRoutes = require("./routes/Admin/adminOrderRoutes")
 const app = express();
 
 // Middleware để parse JSON (express đã tích hợp sẵn)
@@ -41,6 +44,11 @@ app.use("/api/checkout", checkoutRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/subscribe", subscribeRoutes);
+
+//API Admin
+app.use("/api/admin/users", adminRoutes);
+app.use("/api/admin/products", productAdminRoutes);
+app.use("/api/admin/orders", orderAdminRoutes);
 
 app.get("/", (req, res)=>{
     res.send("helo")
