@@ -1,12 +1,17 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import login from "../assets/login.webp"
+import { loginUser } from "../redux/Slices/authSlice";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const dispatch = useDispatch();
+
     const handleSubmit = (e) =>{
         e.preventDefault();
+        dispatch(loginUser({email, password}));
         console.log("User SignIn: ",{email, password})
     }
     return (
@@ -50,12 +55,13 @@ const Login = () => {
                     </div>
                     <button
                     type="submit"
-                    className="w-full bg-black text-white p-2 rounded-lg font-semibold hover:bg-gray-800 transition"
+                    className="w-full bg-black text-white p-2 rounded-lg font-semibold
+                     hover:bg-gray-800 transition cursor-pointer"
                     >
                         Sign In
                     </button>
                     <p className="mt-6 text-center text-sm">
-                        Don't have an account?
+                        Do not have an account?
                         <Link
                         to="/register"
                         className="text-blue-500"
