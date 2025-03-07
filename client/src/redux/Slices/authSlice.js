@@ -10,13 +10,6 @@ const userInfoFromStorage = localStorage.getItem("userInfo")
 const initialGuestId = localStorage.getItem("guestId") || `guest_${new Date().getTime()}`;
 localStorage.setItem("guestId", initialGuestId);
 
-// Initial state
-const initialState = {
-  userInfo: userInfoFromStorage,
-  guestId: initialGuestId,
-  loading: false,
-  error: null,
-};
 
 // Async Thunk for user login
 export const loginUser = createAsyncThunk("auth/loginUser", async (userData, { rejectWithValue }) => {
@@ -45,10 +38,15 @@ export const registerUser = createAsyncThunk("auth/registerUser", async (userDat
 // Slice
 const authSlice = createSlice({
   name: "auth",
-  initialState,
+  initialState:{
+    user: userInfoFromStorage,
+    guestId: initialGuestId,
+    loading: false,
+    error: null,
+  },
   reducers: {
     logout: (state) => {
-      state.userInfo = null;
+      state.user = null;
       state.guestId = `guest_${new Date().getTime()}`;
       localStorage.removeItem("userInfo");
       localStorage.removeItem("userToken");
@@ -67,7 +65,7 @@ const authSlice = createSlice({
     });
     builder.addCase(loginUser.fulfilled, (state, action) => {
       state.loading = false;
-      state.userInfo = action.payload;
+      state.user = action.payload;
     });
     builder.addCase(loginUser.rejected, (state, action) => {
       state.loading = false;
@@ -81,7 +79,7 @@ const authSlice = createSlice({
     });
     builder.addCase(registerUser.fulfilled, (state, action) => {
       state.loading = false;
-      state.userInfo = action.payload;
+      state.user = action.payload;
     });
     builder.addCase(registerUser.rejected, (state, action) => {
       state.loading = false;

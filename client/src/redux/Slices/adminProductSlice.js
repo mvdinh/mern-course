@@ -82,6 +82,7 @@ const adminProductSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
+            //Fetch
             .addCase(fetchAdminProducts.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -92,51 +93,31 @@ const adminProductSlice = createSlice({
             })
             .addCase(fetchAdminProducts.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.error = action.error.message;
             })
-            .addCase(addAdminProduct.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
+
+            //Add
             .addCase(addAdminProduct.fulfilled, (state, action) => {
                 state.loading = false;
                 state.products.push(action.payload);
             })
-            .addCase(addAdminProduct.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
-            .addCase(updateAdminProduct.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
+
+            //Update
             .addCase(updateAdminProduct.fulfilled, (state, action) => {
-                state.loading = false;
                 const index = state.products.findIndex(
-                    (product) => product.id === action.payload.id
+                    (product) => product._id === action.payload._id
                 );
                 if (index !== -1) {
                     state.products[index] = action.payload;
                 }
             })
-            .addCase(updateAdminProduct.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
-            .addCase(deleteAdminProduct.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
+
+            //Delete
             .addCase(deleteAdminProduct.fulfilled, (state, action) => {
-                state.loading = false;
                 state.products = state.products.filter(
-                    (product) => product.id !== action.payload.id
+                    (product) => product._id !== action.payload._id
                 );
             })
-            .addCase(deleteAdminProduct.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            });
     },
 });
 

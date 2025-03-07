@@ -218,24 +218,25 @@ router.get("/best-seller", async(req, res)=>{
     }
 })
 
-// @route GET /api/products/best-seller
+// @route GET /api/products/new-arrivals
 // @desc Retrieve the product with highest rating
 // @access Public
-router.get("/new-arrivals", async(req, res)=>{
-    try{
-        //Fetch latest 8 products
-        const newArrivals = await Product.findOne().sort({createAt: -1}).limit(8);
-        if(newArrivals){
+router.get("/new-arrivals", async (req, res) => {
+    try {
+        // Fetch latest 8 products
+        const newArrivals = await Product.find().sort({ createdAt: -1 }).limit(8);
+
+        if (newArrivals.length > 0) {
             res.json(newArrivals);
-        }else {
-            res.status(404).json({message:"No newArrivals found."})
+        } else {
+            res.status(404).json({ message: "No new arrivals found." });
         }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Server Error");
     }
-    catch(err){
-        console.log(err);
-        res.status(500).send("Sever Error")
-    }
-})
+});
+
 
 // @route GET /api/products/similar/:id
 // @desc Retrieve similar products based on the current product's gender and category

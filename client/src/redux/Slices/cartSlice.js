@@ -16,12 +16,12 @@ const saveCartToStorage = (cart) => {
 //Fetching cart for user or guest
 export const fetchCart = createAsyncThunk(
     "cart/fetchCart",
-    async ({ userId, guestId }, { rejectWithValue }) => {
+    async ({ userId }, { rejectWithValue }) => {
         try {
             const response = await axios.get(
                 `${import.meta.env.VITE_BACKEND_URL}/api/cart`,
                 {
-                    params: { userId, guestId },
+                    params: { userId }
                 }
             );
             return response.data;
@@ -77,7 +77,9 @@ export const updateCartItem = createAsyncThunk(
                     color,
                 }
             );
+            console.log(response.data);
             return response.data;
+            
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to update cart item");
         }

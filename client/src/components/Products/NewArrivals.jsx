@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { Link } from "react-router-dom";
@@ -7,13 +8,26 @@ const NewArrivals = () => {
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
 
-    const newArrivals = [
-        { _id: "1", name: "Nike Air Force 1", price: 120, img: [{ url: "https://picsum.photos/500/500?random=1", altText: "Nike Air Force 1" }] },
-        { _id: "2", name: "Nike Air Force 2", price: 120, img: [{ url: "https://picsum.photos/500/500?random=2", altText: "Nike Air Force 2" }] },
-        { _id: "3", name: "Nike Air Force 3", price: 120, img: [{ url: "https://picsum.photos/500/500?random=3", altText: "Nike Air Force 3" }] },
-        { _id: "4", name: "Nike Air Force 4", price: 120, img: [{ url: "https://picsum.photos/500/500?random=4", altText: "Nike Air Force 4" }] },
-        { _id: "5", name: "Nike Air Force 5", price: 120, img: [{ url: "https://picsum.photos/500/500?random=5", altText: "Nike Air Force 5" }] },
-    ];
+    const [newArrivals, setNewArrivals] = useState([]);
+
+    useEffect(()=>{
+        const fetchNewArrivals = async ()=>{
+            try{
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/new-arrivals`);
+                console.log(res.data);
+                if (Array.isArray(res.data)) {
+                    setNewArrivals(res.data);
+                } else {
+                    console.error("Unexpected response format:", res.data);
+                }
+                setNewArrivals(res.data);
+            }
+            catch(error){
+                console.log(error);
+            }
+        }
+        fetchNewArrivals();
+    },[])
 
     const scroll = (direction) => {
         const container = scrollRef.current;
@@ -40,7 +54,7 @@ const NewArrivals = () => {
 
         container.addEventListener("scroll", updateScrollButtons);
         return () => container.removeEventListener("scroll", updateScrollButtons);
-    }, []);
+    }, [newArrivals]);
 
     return (
         <section>
@@ -67,7 +81,7 @@ const NewArrivals = () => {
             >
                 {newArrivals.map((product) => (
                     <div key={product._id} className="min-w-[100%] sm:min-w-[50%] lg:min-w-[30%] relative">
-                        <img src={product.img[0]?.url} alt={product.img[0]?.altText || product.name} className="w-full h-[500px] object-cover rounded-lg" />
+                        <img src={product.images?.[0]?.url} alt={product.images?.[0]?.altText || product.name} className="w-full h-[500px] object-cover rounded-lg" />
                         <div className="absolute bottom-0 left-0 right-0 bg-opacity-50 backdrop-blur-md text-white p-4 rounded-b-lg">
                             <Link to={`/products/${product._id}`} className="block">
                                 <h4 className="font-medium">{product.name}</h4>

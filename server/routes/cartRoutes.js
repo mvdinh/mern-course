@@ -129,9 +129,9 @@ router.put("/", async (req, res) => {
 // @desc Remove product from cart
 // @access Public
 router.delete("/", async (req, res) => {
-    const {productId, size, color, userId, guestId} = req.body;
+    const {productId, size, color, userId} = req.body;
     try{
-        let cart = await getCart(userId, guestId);
+        let cart = await getCart(userId);
         if(!cart) return res.status(404).json({message: "Not found cart"});
         
         const productIndex = cart.products.findIndex(
@@ -149,22 +149,19 @@ router.delete("/", async (req, res) => {
             return res.status(200).json(cart);
         } else {
             return res.status(404).json({message: "Product not found in cart"});
-
         }
-    
     }
     catch (err){
         console.log(err);
         res.status(500).json({message: "Server Error"})
     }
-
 })
 
 // @route GET /api/cart/
 // @desc Get cart by userId or guestId
 // @access Public
 router.get("/", async (req, res) => {
-    const {productId, size, color, userId, guestId} = req.body;
+    const { userId, guestId} = req.query;
     try{
         let cart = await getCart(userId, guestId);
         if (cart){
