@@ -1,0 +1,13 @@
+# Logs
+logs  
+.logs
+
+# Environment variables
+client/.env
+server/.env
+
+# Node Modules
+client/node_modules
+server/node_modules
+
+.DS_Store
