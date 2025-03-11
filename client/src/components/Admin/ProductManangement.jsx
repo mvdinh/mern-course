@@ -1,30 +1,19 @@
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { deleteAdminProduct, fetchAdminProducts } from "../../redux/Slices/adminProductSlice";
 
 const ProductManagement = () => {
-    const products = [
-        {
-            _id: 123,
-            name: "T-Shirt",
-            price: 100,
-            sku: "1233",
-        },
-        {
-            _id: 1323,
-            name: "T-Shirt",
-            price: 100,
-            sku: "1233",
-        },
-        {
-            _id: 13223,
-            name: "T-Shirt",
-            price: 100,
-            sku: "1233",
-        },
-    ];
+    const dispatch = useDispatch();
+    const {products} = useSelector((state)=>state.adminProduct)
+
+    useEffect(()=>{
+        dispatch(fetchAdminProducts())
+    }, [dispatch])
 
     const handleDeleteUser = (productId) => {
         if (window.confirm("Are you sure you want to delete this product?")) {
-            console.log("Deleted product: ", productId);
+            dispatch(deleteAdminProduct(productId))
         }
     };
 
@@ -64,7 +53,7 @@ const ProductManagement = () => {
                                             </Link>
                                             <button
                                                 onClick={() => handleDeleteUser(product._id)}
-                                                className="bg-red-500 text-white w-24 py-2 rounded-md hover:bg-red-600 transition"
+                                                className="bg-red-500 text-white w-24 py-2 rounded-md hover:bg-red-600 transition cursor-pointer"
                                             >
                                                 Delete
                                             </button>

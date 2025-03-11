@@ -1,17 +1,17 @@
-const OrderManagement = () => {
-    const orders = [
-        {
-            _id: 123,
-            user: {
-                name: "Dinh",
-            },
-            totalPrice: 110,
-            status: "Processing",
-        },
-    ];
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchOrders, updateOrder } from "../../redux/Slices/adminOrderSlice";
 
-    const handleStatus = (orderId, status) => {
+const OrderManagement = () => {
+    const dispatch = useDispatch();
+    const {orders} = useSelector((state)=>state.adminOrder);
+    useEffect(()=>{
+        dispatch(fetchOrders())
+    },[dispatch])
+
+    const handleStatusChange = (orderId, status) => {
         console.log("Updated Order:", orderId, "Status:", status);
+        dispatch(updateOrder({id: orderId, status}));
     };
 
     return (
@@ -41,7 +41,7 @@ const OrderManagement = () => {
                                     <td className="px-4 py-4 text-center">
                                         <select
                                             value={order.status}
-                                            onChange={(e) => handleStatus(order._id, e.target.value)}
+                                            onChange={(e) => handleStatusChange(order._id, e.target.value)}
                                             className="tẽbg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md
                                             focus:ring-blue-500 focus:border-blue-500 block p-2 w-[120px]"
                                         >
@@ -53,7 +53,7 @@ const OrderManagement = () => {
                                     </td>
                                     <td className="p-4 text-center">
                                         <button
-                                            onClick={() => handleStatus(order._id, "Delivered")}
+                                            onClick={() => handleStatusChange(order._id, "Delivered")}
                                             className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition
                                             shadow-md focus:outline-none focus:ring-2 focus:ring-green-400"
                                         >

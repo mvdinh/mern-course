@@ -157,6 +157,30 @@ router.delete("/", async (req, res) => {
     }
 })
 
+// @route DELETE /api/cart/all
+// @desc Remove all product from cart
+// @access Public
+router.delete("/all", async (req, res) => {
+    const { userId } = req.body;
+
+    try {
+        const cart = await Cart.findOne({ userId });
+        if (!cart) {
+            return res.status(404).json({ message: "Cart not found" });
+        }
+
+        // Xóa toàn bộ sản phẩm trong giỏ hàng
+        cart.products = [];
+        cart.totalPrice = 0;
+
+        await cart.save();
+        return res.status(200).json({ message: "All products removed from cart", cart });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+
 // @route GET /api/cart/
 // @desc Get cart by userId or guestId
 // @access Public

@@ -3,7 +3,7 @@ import axios from "axios";
 
 // Fetch all users
 export const fetchAllUsers = createAsyncThunk("admin/fetchAllUsers", async () => {
-    const response = await axios.put(
+    const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/admin/users`,
         {
             headers: {
@@ -14,7 +14,7 @@ export const fetchAllUsers = createAsyncThunk("admin/fetchAllUsers", async () =>
     return response.data;
 });
 
-// Add the create user action
+// Create user
 export const createUser = createAsyncThunk("admin/createUser", async (userData, { rejectWithValue }) => {
     try {
         const response = await axios.post(
@@ -32,31 +32,39 @@ export const createUser = createAsyncThunk("admin/createUser", async (userData, 
     }
 });
 
-// Update user info
+// Update user
 export const updateUser = createAsyncThunk("admin/updateUser", async ({ id, name, email, role }) => {
-    const response = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/api/admin/users/${id}`,
-        { name, email, role },
-        {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-            },
-        }
-    );
-    return response.data;
+    try {
+        const response = await axios.put(
+            `${import.meta.env.VITE_BACKEND_URL}/api/admin/users/${id}`,
+            { name, email, role },
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+                },
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.log(error);
+    }
 });
 
-// Delete a user
-export const deleteUser = createAsyncThunk("admin/deleteUser", async ({ id }) => {
-    await axios.delete(
-        `${import.meta.env.VITE_BACKEND_URL}/api/admin/users/${id}`,
-        {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-            },
-        }
-    );
-    return id;
+// Delete user
+export const deleteUser = createAsyncThunk("admin/deleteUser", async (id, { rejectWithValue }) => {
+    try {
+        await axios.delete(
+            `${import.meta.env.VITE_BACKEND_URL}/api/admin/users/${id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+                },
+            }
+        );
+        return id; // Trả về id để filter
+    } catch (error) {
+        return rejectWithValue(error.response.data);
+    }
 });
 
 // Slice
@@ -90,7 +98,7 @@ const adminSlice = createSlice({
             })
             .addCase(createUser.fulfilled, (state, action) => {
                 state.loading = false;
-                state.users.push(action.payload.user); // Add a new user
+                state.users.push(action.payload.user);
             })
             .addCase(createUser.rejected, (state, action) => {
                 state.loading = false;
@@ -99,16 +107,16 @@ const adminSlice = createSlice({
 
             // Updating user
             .addCase(updateUser.fulfilled, (state, action) => {
-                const updatedUser = action.payload;
-                const userIndex = state.users.findIndex((user) => user._id === updatedUser._id);
-                if (userIndex !== -1) {
-                    state.users[userIndex] = updatedUser;
-                }
+                const { id, role } = action.payload;
+                state.users = state.users.map(user =>
+                    user._id === id ? { ...user, role } : user
+                );
             })
 
-            // Deleting user
+            // Deleting user (FIXED)
             .addCase(deleteUser.fulfilled, (state, action) => {
-                state.users = state.users.filter((user) => user.id !== action.payload);
+                console.log("Deleted User ID:", action.payload); // Debug kiểm tra ID
+                state.users = state.users.filter(user => user._id !== action.payload); // So sánh trực tiếp với action.payload (id)
             });
     },
 });

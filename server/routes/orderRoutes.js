@@ -21,6 +21,15 @@ router.get("/my-orders", protect, async (req, res) => {
     }
 });
 
+router.delete("/", async (req, res) => {
+    try {
+        await Order.deleteMany();
+        return res.status(200).json({ message: "All orders deleted successfully." });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server Error" });
+    }
+});
 // @route GET /api/orders/:id
 // @get Order details by ID
 // @access Private

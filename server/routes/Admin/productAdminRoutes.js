@@ -16,5 +16,24 @@ router.get('/', protect, admin, async (req, res) => {
     }
 });
 
-// 
+//@route DELETE /api/admin/products/:id
+//@desc Get all products(admin only)
+//@access Private Admin
+router.delete('/:id', protect, admin, async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+                if (!product) {
+                    return res.status(404).json({ message: "Product not found" });
+                } else{
+                    await product.deleteOne();
+                    res.json({ message: "Product deleted successfully" });
+                }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+
+ 
 module.exports = router;

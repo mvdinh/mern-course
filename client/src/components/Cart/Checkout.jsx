@@ -1,9 +1,17 @@
-import { useState } from "react";
+import {  useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PayPalButton from "./PayPalButton";
+import { useDispatch, useSelector } from "react-redux";
+import { createCheckout } from "../../redux/Slices/checkoutSlice";
+import axios from "axios";
 
 const Checkout = () => {
+    
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const {cart} = useSelector((state)=>state.cart);
+    const {user} = useSelector((state)=> state.auth);
+
     const [checkoutId, setCheckoutId] = useState(null);
     const [shippingAddress, setShippingAddress] = useState({
         firstname: "",
@@ -15,36 +23,81 @@ const Checkout = () => {
         phone: "",
     });
 
-    const cart = {
-        products: [
-            {
-                name: "T-Shirt",
-                size: "M",
-                color: "Black",
-                price: 120,
-                image: "https://picsum.photos/500/500?random=4"
-            },
-            {
-                name: "Sneaker",
-                size: "M",
-                color: "Black",
-                price: 120,
-                image: "https://picsum.photos/500/500?random=5"
-            },
-        ],
-        totalPrice: 195,
-    };
-
-    const handleCreateCheckout = (e) => {
+    const handleCreateCheckout = async(e) => {
         e.preventDefault();
-        setCheckoutId(123);
+        if(cart && cart.products.length> 0){
+            const res = await dispatch(
+                createCheckout({
+                    checkoutItems: cart.products,
+                    shippingAddress,
+                    paymentMethod: "Paypal",
+                    totalPrice: cart.totalPrice,
+                })
+            )
+            if (res.payload && res.payload._id){
+                setCheckoutId(res.payload._id); // Set checkout ID if checkout was successful
+                console.log("CheckoutId: ",checkoutId );
+            }
+        }
+    };
+    // Dùng cho PayPal
+    // const handlePaymentSuccess = async (details) => {
+    //     try {
+    //         await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/checkout/${checkoutId}/pay`,
+    //             {
+    //                 paymentStatus : "paid",
+    //                 paymentDetails: details,
+    //             },
+    //             {
+    //                 headers:{
+    //                     Authorization: `Bearer ${localStorage.getItem("userToken")}`
+    //                 }
+    //             }
+    //         );
+    //         await handleFinalizeCheckout(checkoutId);
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // };
+    const handlePaymentSuccess = async () => {
+        try {
+            await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/checkout/${checkoutId}/pay`,
+                {
+                    paymentStatus : "paid",
+                    paymentDetails:{
+                        "transactionId":"tem12",
+                        "paymentGateway":"PayPal",
+                        "amount":19,
+                        "currency":"USD"
+                    },
+                },
+                {
+                    headers:{
+                        Authorization: `Bearer ${localStorage.getItem("userToken")}`
+                    }
+                }
+            );
+            await handleFinalizeCheckout(checkoutId);
+        } catch (error) {
+            console.log(error)
+        }
     };
 
-    const handlePaymentSuccess = (details) => {
-        console.log("Payment Successful", details);
-        navigate("/order-confirmation");
-    };
-
+    const handleFinalizeCheckout =  async(checkoutId) =>{
+        try {
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/checkout/${checkoutId}/finalize`,
+                {},
+                {
+                    headers:{
+                        Authorization: `Bearer ${localStorage.getItem("userToken")}`
+                    }
+                }
+            );
+            navigate("/order-confirmation");
+        } catch (error) {
+            console.log(error)
+        }
+    }
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto py-10 px-6 tracking-tighter">
             {/* Left Section */}
@@ -56,7 +109,7 @@ const Checkout = () => {
                         <label className="block text-gray-700">Email</label>
                         <input
                             type="email"
-                            value="dinh@gmail.com"
+                            value={user ? user.email : ""}
                             className="w-full p-2 border rounded"
                             disabled
                         />
@@ -150,12 +203,18 @@ const Checkout = () => {
                         ) : (
                             <div>
                                 <h3 className="text-lg mb-4">Pay with PayPal</h3>
+                                <button
+                                className="border text-xs border-mb mb-4 p-3 cursor-pointer" 
+                                onClick={handlePaymentSuccess}
+                                >
+                                    Thanh toán
+                                </button>
                                 {/* PayPal Component */}
-                                <PayPalButton
+                                {/* <PayPalButton
                                     amount={cart.totalPrice}
                                     onSuccess={handlePaymentSuccess}
                                     onError={() => alert("Payment failed. Try again.")}
-                                />
+                                /> */}
                             </div>
                         )}
                     </div>

@@ -1,49 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import {fetchUserOrders} from "../redux/Slices/orderSlice";
 
 const MyOrderPage = () => {
-    const [orders, setOrders] = useState([]);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
+    const {orders} = useSelector((state)=>state.orders);
     useEffect(() => {
-        // Simulate fetching orders
-        setTimeout(() => {
-            const mockOrders = [
-                {
-                    _id: "1",
-                    createAt: new Date(),
-                    shippingAddress: {
-                        city: "Hanoi",
-                        country: "Vietnam",
-                    },
-                    orderItems: [
-                        {
-                            name: "Product 1",
-                            image: "https://picsum.photos/500/500?random=4",
-                        },
-                    ],
-                    totalPrice: 100,
-                    isPaid: true,
-                },
-                {
-                    _id: "2",
-                    createAt: new Date(),
-                    shippingAddress: {
-                        city: "Hanoi",
-                        country: "Vietnam",
-                    },
-                    orderItems: [
-                        {
-                            name: "Product 2",
-                            image: "https://picsum.photos/500/500?random=5",
-                        },
-                    ],
-                    totalPrice: 150,
-                    isPaid: false,
-                },
-            ];
-            setOrders(mockOrders);
-        }, 100);
-    }, []);
+       dispatch(fetchUserOrders());
+    }, [dispatch]);
     
     const handleRowClick = (orderId) =>{
         navigate(`/order/${orderId}`)
@@ -83,7 +49,7 @@ const MyOrderPage = () => {
                                         #{order._id}
                                     </td>
                                     <td className="px-2 py-2 sm:px-4 py-4">
-                                        {new Date(order.createAt).toLocaleDateString()}
+                                        {new Date(order.createdAt).toLocaleDateString()}
                                     </td>
                                     <td className="px-2 py-2 sm:px-4 py-4">
                                         {order.shippingAddress

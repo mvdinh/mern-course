@@ -1,27 +1,26 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import ProductGird from "./ProductGird";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {fetchProductDetails, fetchSimilarProducts} from "../../redux/Slices/productsSlice";
 import {addToCart} from "../../redux/Slices/cartSlice";
 
-const ProductDetails = ({ productId }) => {
+const ProductDetails = ({ productId }) => {  
   const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { selectedProduct, loading, error, similarProducts } = useSelector(
     (state) => state.products
   );
-  const { user, guestId } = useSelector((state) => state.auth);
+  const { user} = useSelector((state) => state.auth);
 
   const [mainImage, setMainImage] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-
   const productFetchId = productId || id;
-  console.log("productFetchId", productFetchId);
 
   useEffect(() => {
     if (productFetchId) {
@@ -46,33 +45,36 @@ const ProductDetails = ({ productId }) => {
   };
 
   const handleAddToCart = () => {
-    if (!selectedColor || !selectedSize) {
-      toast.error("Please select a size and color before adding to cart.", {
-        duration: 1000,
-      });
-      return;
-    }
-
-    setIsButtonDisabled(true);
-
-    dispatch(
-      addToCart({
-        productId: productFetchId,
-        quantity,
-        size: selectedSize,
-        color: selectedColor,
-        guestId,
-        userId: user?._id,
-      })
-    )
-      .then(() => {
-        toast.success("Product added to cart", {
+    if(user){
+      if (!selectedColor || !selectedSize) {
+        toast.error("Please select a size and color before adding to cart.", {
           duration: 1000,
         });
-      })
-      .finally(() => {
-        setIsButtonDisabled(false);
-      });
+        return;
+      }
+  
+      setIsButtonDisabled(true);
+  
+      dispatch(
+        addToCart({
+          productId: productFetchId,
+          quantity,
+          size: selectedSize,
+          color: selectedColor,
+          userId: user?._id,
+        })
+      )
+        .then(() => {
+          toast.success("Product added to cart", {
+            duration: 1000,
+          });
+        })
+        .finally(() => {
+          setIsButtonDisabled(false);
+        });
+    } else{
+      navigate("/login");
+    }
   };
 
   if (loading) {

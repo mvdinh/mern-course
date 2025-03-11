@@ -1,36 +1,43 @@
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import {fetchAdminProducts} from "../../redux/Slices/adminProductSlice"
+import {fetchOrders} from "../../redux/Slices/adminOrderSlice"
 
 const AdminHomePage = () => {
-    const orders = [
-        {
-            _id: 122,
-            user: {
-                name: "dinh"
-            },
-            totalPrice: 100,
-            status: "Processing",
-        }
-    ];
+    const dispatch = useDispatch();
+    const { products } = useSelector((state)=> state.adminProduct);
+    const {orders, totalOrders, totalSales} = useSelector((state)=> state.adminOrder);
+
+    useEffect(()=>{
+        dispatch(fetchAdminProducts());
+        dispatch(fetchOrders());
+        console.log("Order Admin",orders);
+        console.log("Product Admin",products);
+    },[dispatch])
 
     return (
         <div className="max-w-7xl max-h-auto p-6">
             <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div className="p-4 shadow-md rounded-lg">
                     <h2 className="text-xl font-semibold">Revenue</h2>
-                    <p className="text-2xl">$1000</p>
+                    <p className="text-2xl">${totalSales.toFixed(2)}</p>
                 </div>
                 <div className="p-4 shadow-md rounded-lg">
                     <h2 className="text-xl font-semibold">Total Orders</h2>
-                    <p className="text-2xl">200</p>
+                    <p className="text-2xl">{totalOrders}</p>
                     <Link to="/admin/orders" className="text-blue-500 hover:underline">Manage Orders</Link>
                 </div>
                 <div className="p-4 shadow-md rounded-lg">
                     <h2 className="text-xl font-semibold">Total Products</h2>
-                    <p className="text-2xl">100</p>
+                    <p className="text-2xl">{products.length}</p>
                     <Link to="/admin/products" className="text-blue-500 hover:underline">Manage Products</Link>
                 </div>
             </div>
+            }
+            
             <div className="mt-6">
                 <h2 className="text-2xl font-bold mb-4">Recent Orders</h2>
                 <div className="overflow-x-auto">

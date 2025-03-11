@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom"
 import login from "../assets/login.webp"
 import { loginUser } from "../redux/Slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { mergeCarts } from "../redux/Slices/cartSlice";
 
 const Login = () => {
     const [email, setEmail] = useState("")
@@ -13,7 +12,7 @@ const Login = () => {
     const location = useLocation();
     const {user, guestId} = useSelector((state)=>state.auth);
     const {cart} = useSelector((state)=> state.cart);
-    //14:15
+    
     // Lấy tham số để chuyển hướng
     const redirect = new URLSearchParams(location.search).get("redirect") || "/";
     const isCheckoutRedirect = redirect.includes("checkout");
@@ -21,7 +20,7 @@ const Login = () => {
     useEffect(()=>{
         if(user){
             if(cart?.products.length > 0 && guestId){
-                dispatch(mergeCarts({guestId, user})).then(()=>{
+                dispatch( ({guestId, user})).then(()=>{
                     navigate(isCheckoutRedirect ? "/checkout" : "/");
                 })
             }
@@ -30,6 +29,7 @@ const Login = () => {
             }
         }
     },[user, guestId, cart, navigate, isCheckoutRedirect, dispatch])
+
 
     const handleSubmit = (e) =>{
         e.preventDefault();

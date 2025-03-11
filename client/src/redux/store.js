@@ -4,7 +4,7 @@ import productsReducer from "./Slices/productsSlice";
 import cartReducer from "./Slices/cartSlice";
 import checkoutReducer from "./Slices/checkoutSlice";
 import orderReducer from "./Slices/orderSlice"
-import adminReducer from "./Slices/authSlice"
+import adminReducer from "./Slices/adminSilce"
 import adminProductReducer from "./Slices/adminProductSlice";
 import adminOrderReducer from "./Slices/adminOrderSlice"
 

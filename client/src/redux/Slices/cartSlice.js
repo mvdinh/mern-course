@@ -100,29 +100,7 @@ export const removeFromCart = createAsyncThunk("cart/removeFromCart",
     }
 });
 
-//Merge guest cart into user cart
-export const mergeCarts = createAsyncThunk(
-    "cart/mergeCart",
-    async ({ userId, guestId }, { rejectWithValue }) => {
-        try {
-            const response = await axios.post(
-                `${import.meta.env.VITE_BACKEND_URL}/api/cart/merge`,
-                {
-                    userId,
-                    guestId,
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-                    },
-                }
-            );
-            return response.data;
-        } catch (error) {
-            return rejectWithValue(error.response?.data || "Failed to merge carts");
-        }
-    }
-);
+
 
 //Slice
 const cartSlice = createSlice({
@@ -199,20 +177,6 @@ const cartSlice = createSlice({
             state.error = action.payload?.message || "Failed to remove item";
         });
     
-        //Merging carts
-        builder.addCase(mergeCarts.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-        });
-        builder.addCase(mergeCarts.fulfilled, (state, action) => {
-            state.cart = action.payload;
-            state.loading = false;
-            saveCartToStorage(state.cart);
-        });
-        builder.addCase(mergeCarts.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.payload?.message || "Failed to merge carts";
-        });
     }
 }); 
 export const { clearCart } = cartSlice.actions;

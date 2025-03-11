@@ -1,42 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
+import { fetchOrderDetails } from "../redux/Slices/orderSlice";
 
 const OrderDetailPage = () => {
   const { id } = useParams();
-  const [orderDetails, setOrderDetails] = useState(null);
+  const {orderDetails} = useSelector((state)=>state.orders);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const mockOrderDetail = {
-      _id: id,
-      createAt: new Date(),
-      isPaid: true,
-      isDelivered: false,
-      paymentMethod: "Paypal",
-      shippingMethod: "Standard",
-      shippingAddress: { city: "Hanoi", country: "Vietnam" },
-      orderItems: [
-        {
-          productId: "1",
-          name: "Jacket",
-          color: "black",
-          size: "M",
-          price: 150,
-          quantity: 1,
-          image: "https://picsum.photos/500/500?random=1",
-        },
-        {
-          productId: "2",
-          name: "T_shirt",
-          color: "black",
-          size: "M",
-          price: 150,
-          quantity: 2,
-          image: "https://picsum.photos/500/500?random=2",
-        },
-      ],
-    };
-    setOrderDetails(mockOrderDetail);
-  }, [id]);
+    dispatch(fetchOrderDetails(id));
+  }, [dispatch, id]);
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6">
@@ -52,7 +26,7 @@ const OrderDetailPage = () => {
                 Order ID: #{orderDetails._id}
               </h3>
               <p className="text-gray-600">
-                {new Date(orderDetails.createAt).toLocaleDateString()}
+                Date: {new Date(orderDetails.createdAt).toLocaleDateString()}
               </p>
             </div>
             <div className="flex flex-col items-start sm:items-end mt-4 sm:mt-0">
@@ -95,41 +69,45 @@ const OrderDetailPage = () => {
           </div>
 
           {/* Product List */}
-          <div className="overflow-x-auto">
-            <h4 className="text-lg font-semibold mb-4">Products</h4>
-            <table className="min-w-full text-gray-600 mb-4">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="py-2 px-4">Name</th>
-                  <th className="py-2 px-4">Unit Price</th>
-                  <th className="py-2 px-4">Quantity</th>
-                  <th className="py-2 px-4">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orderDetails.orderItems.map((item) => (
-                  <tr key={item.productId} className="border-b">
-                    <td className="py-2 px-4 flex items-center">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-12 h-12 object-cover rounded-lg mr-4"
-                      />
-                      <Link
-                        to={`/product/${item.productId}`}
-                        className="text-blue-500 hover:underline"
-                      >
-                        {item.name}
-                      </Link>
-                    </td>
-                    <td className="px-2 py-4">${item.price}</td>
-                    <td className="px-2 py-4">{item.quantity}</td>
-                    <td className="px-2 py-4">${item.price * item.quantity}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {/* Product List */}
+<div className="overflow-x-auto">
+  <h4 className="text-lg font-semibold mb-4">Products</h4>
+  <table className="min-w-full table-fixed text-gray-600 mb-4">
+    <thead className="bg-gray-100">
+      <tr>
+        <th className="py-2 px-4 w-1/3 pl-30 text-left">Name</th>
+        <th className="py-2 px-4 w-1/6 text-center">Unit Price</th>
+        <th className="py-2 px-4 w-1/6 text-center">Quantity</th>
+        <th className="py-2 px-4 w-1/6 text-center">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {orderDetails.orderItems.map((item) => (
+        <tr key={item.productId} className="border-b">
+          <td className="py-2 px-4 flex items-center space-x-4">
+            <img
+              src={item.image}
+              alt={item.name}
+              className="w-14 h-14 object-cover rounded-lg"
+            />
+            <Link
+              to={`/product/${item.product}`}
+              className="text-blue-500 hover:underline truncate w-40"
+            >
+              {item.name}
+            </Link>
+          </td>
+          <td className="px-2 py-4 text-center">${item.price.toFixed(2)}</td>
+          <td className="px-2 py-4 text-center">{item.quantity}</td>
+          <td className="px-2 py-4 text-center">
+            ${(item.price * item.quantity).toFixed(2)}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
 
           {/* Back To Orders Link */}
           <Link to="/my-orders" className="text-blue-500 hover:underline">

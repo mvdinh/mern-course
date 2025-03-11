@@ -18,9 +18,12 @@ export const fetchOrders = createAsyncThunk("adminOrder/fetchOrders", async (_, 
 });
 
 
-export const updateOrder = createAsyncThunk("adminOrder/updateOrder", async ({ id, status }, { rejectWithValue }) => {
+export const updateOrder = createAsyncThunk("adminOrder/updateOrder", 
+    async ({ id, status }, { rejectWithValue }) => {
     try {
-        const response = await axios.put(`${API_URL}/orders/${id}`, {status}, {
+        const response = await axios.put(`${API_URL}/orders/${id}`,
+            {status}, 
+            {
             headers: {
                 Authorization: TOKEN,
             },
@@ -81,6 +84,7 @@ const adminOrderSlice = createSlice({
             //Update Order Status
             .addCase(updateOrder.fulfilled, (state, action) => {
                 const updateOrder = action.payload;
+                console.log("Update order: ", action.payload)
                 const orderIndex = state.orders.findIndex(order => order._id === action.payload._id);
                 if (orderIndex !== -1) {
                     state.orders[orderIndex] = updateOrder;

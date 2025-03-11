@@ -22,7 +22,7 @@ export const fetchUserOrders = createAsyncThunk(
 );
 
 // Async thunk to fetch order details by ID
-export const fetchUserDetails = createAsyncThunk(
+export const fetchOrderDetails = createAsyncThunk(
     "orders/fetchUserDetails",
     async (orderId, { rejectWithValue }) => {
         try {
@@ -68,15 +68,15 @@ const orderSlice = createSlice({
             })
 
             // Fetch order details
-            .addCase(fetchUserDetails.pending, (state) => {
+            .addCase(fetchOrderDetails.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchUserDetails.fulfilled, (state, action) => {
+            .addCase(fetchOrderDetails.fulfilled, (state, action) => {
                 state.loading = false;
                 state.orderDetails = action.payload;
             })
-            .addCase(fetchUserDetails.rejected, (state, action) => {
+            .addCase(fetchOrderDetails.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload || "Failed to fetch order details";
             });
